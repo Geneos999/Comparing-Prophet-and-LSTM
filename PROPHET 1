@@ -1,0 +1,144 @@
+Cross-validation process for hypertunning parameters 
+
+
+from prophet import Prophet
+from prophet.diagnostics import cross_validation, performance_metrics
+import pandas as pd
+import itertools
+import holidays
+
+# Load data
+df = pd.read_csv('/home/neo/Downloads/NA400/volvo.csv')
+
+
+df. columns = ['ds', 'y']
+
+
+# Define parameter grid
+param_grid = {
+	'yearly_seasonality': [True, False],
+	'weekly_seasonality': [True, False],
+	'monthly_seasonality': [True, False],
+	'daily_seasonality': [True, False],
+	'seasonality_mode': ['additive', 'multiplicative'],
+'changepoint_prior_scale': [0.001, 0.01, 0.1, 0.5], # to give higher value to prior trend 	'seasonality_prior_scale': [0.01, 0.1, 1.0, 10.0] # to control the flexibility of seasonality components
+}
+
+# Generate all combinations of parameters
+all_params = [dict(zip(param_grid.keys(), v)) for v in itertools.product(*param_grid.values())]
+
+# Initialize a list to store results
+results = []
+
+# Loop over all parameter combinations
+for params in all_params:
+	# Initialize Prophet with specified seasonality mode
+	model = Prophet(
+    	seasonality_mode=params['seasonality_mode'],
+    	yearly_seasonality=True,
+    	weekly_seasonality=True, 
+    	daily_seasonality=True
+	)
+    
+	# Add custom seasonalities
+	model.add_country_holidays(country_name="US")
+
+	model.add_seasonality(name='yearly', period=365, fourier_order=params['yearly_seasonality'])
+	model.add_seasonality(name='weekly', period=7, fourier_order=params['weekly_seasonality'])
+	model.add_seasonality(name='monthly', period=30.5, fourier_order=params['monthly_seasonality'])
+    	model.add_seasonality(name='daily', period=1, fourier_order=params['monthly_seasonality'])
+
+	# Fit the model
+	model.fit(df)
+    
+	# Perform cross-validation
+	df_cv = cross_validation(model, initial='1460 days', period='180 days', horizon='30 days')
+	df_p = performance_metrics(df_cv)
+    
+	# Store results with average RMSE across horizons
+	rmse = df_p['rmse'].mean()
+	results.append((params, rmse))
+
+# Find the best parameters based on RMSE
+best_params = min(results, key=lambda x: x[1])
+print("Best Parameters:", best_params[0])
+print("Best RMSE:", best_params[1])
+
+
+
+
+—--------------------------------------------------------------------------------------------------
+
+
+
+Forecast based on best parameters
+
+import pandas as pd
+from prophet import Prophet
+from sklearn.metrics import mean_squared_error
+import numpy as np
+
+
+# Load the data
+df = pd.read_csv('/home/neo/Downloads/NA400/volvo.csv')
+
+df.columns = ['ds', 'y']
+
+# Define training and testing data
+train = df[:-14]  # All but the last 14 days for training
+test = df[-14:]   # Last 14 days for testing
+
+
+# Initialize Prophet with the best parameters
+best_model = Prophet(
+	seasonality_mode='multiplicative',
+	yearly_seasonality=False,
+	weekly_seasonality=False,
+	daily_seasonality=False	
+)
+
+
+# Add seasonalities based on best parameters
+best_model.add_seasonality(name='yearly', period=365, fourier_order=15)
+best_model.add_seasonality(name='weekly', period=7, fourier_order=5)
+best_model.add_seasonality(name='monthly', period=30.5, fourier_order=7)
+
+
+
+# Fit the model on the training data
+best_model.fit(train)
+
+# Create a DataFrame to hold future dates for 14-day forecast
+future = best_model.make_future_dataframe(periods=14)
+
+# Generate the forecast
+forecast = best_model.predict(future)
+
+# Extract the forecasted values for the test period
+forecast_14d = forecast[['ds', 'yhat']].tail(14)
+forecast_14d['actual'] = test['y'].values  # Add actual values for comparison
+
+# Calculate RMSE between actual and forecasted values
+rmse = np.sqrt(mean_squared_error(forecast_14d['actual'], forecast_14d['yhat']))
+print("RMSE for 14-day forecast:", rmse)
+
+# Display the forecast and actual values
+print(forecast_14d[['ds', 'yhat', 'actual']])
+
+import matplotlib.pyplot as plt
+
+# Plot actual vs forecasted values for the 14-day period
+plt.figure(figsize=(10, 6))
+plt.plot(forecast_14d['ds'], forecast_14d['actual'], label='Actual', marker='o')
+plt.plot(forecast_14d['ds'], forecast_14d['yhat'], label='Forecast', marker='o')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.title('14-Day Forecast vs Actual Values')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Save the forecasted and actual values for the 14-day period
+forecast_14d[['ds', 'yhat', 'actual']].to_csv("14_day_forecast_vs_actual.csv", index=False)
+
+
