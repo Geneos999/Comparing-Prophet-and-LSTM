@@ -50,7 +50,8 @@ This step-by-step approach helps ensure a systematic forecast generation, tuning
 Here's a step-by-step methodology for applying an LSTM model to time series forecasting, similar to what we followed with Prophet. This guide covers each key step, from data preparation to model evaluation.
 ---------------------------------------------------------------------------------------------------
 LSTM 
-Data Preprocessing
+
+1.Data Preprocessing
 Load and Inspect Data: Start by loading the dataset and understanding its structure, especially focusing on datetime formatting and the target variable (e.g., stock price, sales data).
 Scaling Data: Apply a scaling transformation (like MinMaxScaler or StandardScaler) to normalize the dataset within a range, typically [0, 1], which helps improve model performance.
 Define Sequence Length: Set the sequence length (or lookback window) to indicate how many previous time steps the model should consider. This length (e.g., 60 days) is critical as it affects the LSTM's ability to capture temporal dependencies.
@@ -58,27 +59,30 @@ Creating Sequences for Training
 Generate Input Sequences: Using the sequence length, generate input sequences where each sequence consists of a defined number of past observations (e.g., the previous 60 days) that the model will use to make predictions.
 Define Forecast Horizon: Specify the number of future time steps to predict. For example, predicting the next 14 or 30 days at a time.
 
-Train-Test Split
+2.Train-Test Split
 Splitting the Data: Divide the data into training and testing sets. The model trains on historical data up to a point and tests on the remaining data to evaluate forecast accuracy.
 Shape Restructuring: Reshape the input arrays into the format (samples, sequence length, features) as required by LSTM.
 Model Definition
-Initialize LSTM Model: Build a Sequential model in Keras or TensorFlow. Common architectures include multiple LSTM layers, each potentially followed by a dropout layer to reduce overfitting.
+
+3.Initialize LSTM Model: Build a Sequential model in Keras or TensorFlow. Common architectures include multiple LSTM layers, each potentially followed by a dropout layer to reduce overfitting.
 Set Hyperparameters: Define model hyperparameters like the number of LSTM units, dropout rates, batch size, and number of epochs. These values affect the model's capacity, regularization, and training duration.
 Output Layer: The final Dense layer should have units equal to the forecast horizon (e.g. 30 units if predicting 30 days), representing each predicted day’s value.
 Model Training
 Compile and Train: Compile the model with an optimizer (e.g., Adam) and a loss function (e.g., mean squared error). Fit the model on the training set, with early stopping or validation loss monitoring if desired.
 Validation: If validation data is available, use it to monitor for overfitting and adjust the model if necessary.
 
-Hyperparameter Tuning (Optional)
+4.Hyperparameter Tuning (Optional)
 Optuna or Grid Search: To optimize hyperparameters, use a tuning library like Optuna or a grid search approach. Tuning the sequence length, LSTM units, learning rate, batch size, and number of epochs can improve model performance.
 Select Best Parameters: Evaluate models based on RMSE or another error metric to select the best configuration.
-Forecasting
+
+5.Forecasting
 Forecast with Last Sequence: Take the last available sequence of data points from the scaled dataset as input to forecast the future period (14 and 30 days).
 Inverse Transformation: Rescale predictions back to the original units using the scaler, so the output is in the same range as the actual target values.
 Model Evaluation
 Calculate Error Metrics: Compare the forecasted values to actual values for the test set using metrics such as RMSE, MAE, or MAPE to quantify the model's accuracy.
 Plot Results: Visualize the predicted and actual values over the forecast horizon. A plot helps to identify whether the model captures trends and seasonality.
-Saving and Deploying
+
+6.Saving and Deploying
 Save Forecast Data: Export the forecast and evaluation data as CSV files for future reference.
 Model Deployment: Save the trained model if needed for real-time predictions, particularly if the LSTM model will continue to forecast as new data arrives.
 
