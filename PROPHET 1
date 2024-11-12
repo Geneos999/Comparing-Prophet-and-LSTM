@@ -5,7 +5,7 @@ from prophet import Prophet
 from prophet.diagnostics import cross_validation, performance_metrics
 import pandas as pd
 import itertools
-import holidays
+
 
 # Load data
 df = pd.read_csv('/home/YOUR.CVS)
