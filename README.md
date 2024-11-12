@@ -1,1 +1,1 @@
-# Compering-Prophet-and-LSTM
+# Comparing-Prophet-and-LSTM
