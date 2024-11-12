@@ -8,7 +8,7 @@ import itertools
 import holidays
 
 # Load data
-df = pd.read_csv('/home/neo/Downloads/NA400/volvo.csv')
+df = pd.read_csv('/home/YOUR.CVS)
 
 
 df. columns = ['ds', 'y']
