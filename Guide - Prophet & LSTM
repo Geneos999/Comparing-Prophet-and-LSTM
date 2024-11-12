@@ -1,0 +1,75 @@
+Prophet model forecasting methodology
+Here's a step-by-step breakdown of the methodology used to build, tune, and evaluate the forecast using the Prophet model. You find a guide and codes in my respiratory “(Forecasting-ML) on github.com.  
+ 1: Load and Prepare Data
+Data Import: Load time series data containing historical values for the variable of interest (e.g., Bitcoin prices).
+Date Parsing: Ensure the date column is in a datetime format to allow for accurate time-based indexing.
+Format for Prophet: Prophet requires columns labeled ds for dates and y for the values to be predicted.
+ 2: Initial Prophet Model Setup
+Instantiate Prophet: Create an initial Prophet model instance with default parameters.
+Set Seasonality:
+Prophet includes options for daily, weekly, monthly, and yearly seasonality. We initially chose default settings but aimed to optimize them later.
+Train-Test Split: Divide the data, keeping the last portion (e.g., 14 days) aside for validation to assess forecast accuracy.
+
+3: Train the Model
+Fit the Model: Train Prophet on the training data, where it learns the overall trend, seasonal patterns, and holiday effects (if included).
+Forecasting Period: Set the forecast period (e.g., 14 days) by creating a DataFrame with future dates.
+Forecast Generation: Generate forecasts using Prophet’s .predict() method, which outputs not only the forecast but also trend and seasonality components.
+ 4: Initial Forecast and Evaluation
+Initial Forecast: Generate a basic 14-day forecast with default Prophet settings.
+Evaluation Metric (RMSE):
+Compare the predicted values against the actual values for the forecast period.
+Calculate RMSE (Root Mean Squared Error) to quantify the forecast’s accuracy. Lower RMSE values indicate better performance.
+5: Hyperparameter Tuning with Grid Search
+Define Hyperparameters:
+Choose different values for yearly_seasonality, weekly_seasonality, monthly_seasonality, and seasonality_mode (additive or multiplicative).
+Adjust fourier order for finer seasonal pattern fitting.
+Grid Search and cross-validation:
+Run a grid search over a range of possible values for each hyperparameter, iterating over combinations.
+For each combination, train Prophet on the training data, generate a forecast, and compute RMSE.
+Select Best Parameters:
+After iterating through all combinations, identify the set of parameters that produces the lowest RMSE on the validation set.
+6: Retrain Model with Optimized Hyperparameters
+Instantiate New Prophet Model: Using the optimal parameters found, create a new Prophet model instance.
+Fit on Full Training Data: Train this tuned model on the entire training set to maximize available information.
+Generate Final Forecast: Produce a new forecast for the future period (14 days) using the tuned model.
+7: Save and Compare Results
+Save Forecast: Export the forecasted results to a CSV file for record-keeping or further analysis.
+Compare to Actual Values:
+Create a DataFrame comparing the actual values to the forecasted values.
+Compute the RMSE of the final forecast against the actual values to assess improvement.
+This step-by-step approach helps ensure a systematic forecast generation, tuning, and evaluation process to achieve the best possible accuracy with Prophet.
+
+Here's a step-by-step methodology for applying an LSTM model to time series forecasting, similar to what we followed with Prophet. This guide covers each key step, from data preparation to model evaluation.
+4.2 LSTM Forecasting Methodology
+Data Preprocessing
+Load and Inspect Data: Start by loading the dataset and understanding its structure, especially focusing on datetime formatting and the target variable (e.g., stock price, sales data).
+Scaling Data: Apply a scaling transformation (like MinMaxScaler or StandardScaler) to normalize the dataset within a range, typically [0, 1], which helps improve model performance.
+Define Sequence Length: Set the sequence length (or lookback window) to indicate how many previous time steps the model should consider. This length (e.g., 60 days) is critical as it affects the LSTM's ability to capture temporal dependencies.
+Creating Sequences for Training
+Generate Input Sequences: Using the sequence length, generate input sequences where each sequence consists of a defined number of past observations (e.g., the previous 60 days) that the model will use to make predictions.
+Define Forecast Horizon: Specify the number of future time steps to predict. For example, predicting the next 14 or 30 days at a time.
+
+Train-Test Split
+Splitting the Data: Divide the data into training and testing sets. The model trains on historical data up to a point and tests on the remaining data to evaluate forecast accuracy.
+Shape Restructuring: Reshape the input arrays into the format (samples, sequence length, features) as required by LSTM.
+Model Definition
+Initialize LSTM Model: Build a Sequential model in Keras or TensorFlow. Common architectures include multiple LSTM layers, each potentially followed by a dropout layer to reduce overfitting.
+Set Hyperparameters: Define model hyperparameters like the number of LSTM units, dropout rates, batch size, and number of epochs. These values affect the model's capacity, regularization, and training duration.
+Output Layer: The final Dense layer should have units equal to the forecast horizon (e.g. 30 units if predicting 30 days), representing each predicted day’s value.
+Model Training
+Compile and Train: Compile the model with an optimizer (e.g., Adam) and a loss function (e.g., mean squared error). Fit the model on the training set, with early stopping or validation loss monitoring if desired.
+Validation: If validation data is available, use it to monitor for overfitting and adjust the model if necessary.
+
+Hyperparameter Tuning (Optional)
+Optuna or Grid Search: To optimize hyperparameters, use a tuning library like Optuna or a grid search approach. Tuning the sequence length, LSTM units, learning rate, batch size, and number of epochs can improve model performance.
+Select Best Parameters: Evaluate models based on RMSE or another error metric to select the best configuration.
+Forecasting
+Forecast with Last Sequence: Take the last available sequence of data points from the scaled dataset as input to forecast the future period (14 and 30 days).
+Inverse Transformation: Rescale predictions back to the original units using the scaler, so the output is in the same range as the actual target values.
+Model Evaluation
+Calculate Error Metrics: Compare the forecasted values to actual values for the test set using metrics such as RMSE, MAE, or MAPE to quantify the model's accuracy.
+Plot Results: Visualize the predicted and actual values over the forecast horizon. A plot helps to identify whether the model captures trends and seasonality.
+Saving and Deploying
+Save Forecast Data: Export the forecast and evaluation data as CSV files for future reference.
+Model Deployment: Save the trained model if needed for real-time predictions, particularly if the LSTM model will continue to forecast as new data arrives.
+
