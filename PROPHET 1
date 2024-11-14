@@ -52,7 +52,7 @@ for params in all_params:
 	model.fit(df)
     
 	# Perform cross-validation
-	df_cv = cross_validation(model, initial='1460 days', period='180 days', horizon='30 days')
+	df_cv = cross_validation(model, initial='1460 days', period='180 days', horizon='14 days')
 	df_p = performance_metrics(df_cv)
     
 	# Store results with average RMSE across horizons
