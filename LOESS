@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller
+
+# Load the dataset (example format: 'Date' and 'Price')
+df = pd.read_csv('/home/neo/Downloads/NA400/atlas.csv')
+
+# Ensure the 'Date' column is in datetime format and set it as the index
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+# Plot the original data
+plt.figure(figsize=(12, 6))
+plt.plot(df, label='Original Data')
+plt.title('Time Series Data')
+plt.xlabel('Date')
+plt.ylabel('Price')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Decompose the time series
+result = seasonal_decompose(df['Price'], model='additive', period=30)  # Adjust period based on known seasonality
+
+# Plot decomposition
+result.plot()
+plt.show()
+
+# Test for stationarity with Augmented Dickey-Fuller Test
+adf_result = adfuller(df['Price'])
+print("ADF Statistic:", adf_result[0])
+print("p-value:", adf_result[1])
+print("Critical Values:", adf_result[4])
+
+if adf_result[1] < 0.05:
+    print("The data is stationary (reject null hypothesis).")
+else:
+    print("The data is non-stationary (fail to reject null hypothesis).")
+
+# Identify trends visually
+plt.figure(figsize=(12, 6))
+plt.plot(df.index, result.trend, label='Trend', color='blue')
+plt.plot(df.index, result.seasonal, label='Seasonality', color='green')
+plt.plot(df.index, result.resid, label='Residuals', color='red')
+plt.title('Identified Trends, Seasonality, and Residuals')
+plt.xlabel('Date')
+plt.ylabel('Value')
+plt.legend()
+plt.grid()
+plt.show()
+
