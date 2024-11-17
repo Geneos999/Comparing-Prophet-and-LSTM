@@ -1,0 +1,53 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+%matplotlib inline
+
+data = pd.read_csv('/home/neo/Downloads/NA400/atlas.csv')
+
+df = pd.read_csv('/home/neo/Downloads/NA400/atlas.csv')
+
+#View dimensions of dataset
+df.shape
+
+#Summary statistics 
+df.describe()
+
+Volvo
+             Price
+count  1449.000000
+mean    191.456943
+std      46.479040
+min      93.150000
+25%     152.520000
+50%     193.860000
+75%     217.150000
+max     318.000000
+
+Investor
+    Price
+count  1449.000000
+mean    182.871360
+std      53.805433
+min      95.800000
+25%     133.200000
+50%     187.700000
+75%     212.100000
+max     314.000000
+
+Atlas copco
+
+             Price
+count  1449.000000
+mean    122.671291
+std      36.616367
+min      54.700000
+25%      96.400000
+50%     123.300000
+75%     146.700000
+max     205.800000
+
+
+
+
