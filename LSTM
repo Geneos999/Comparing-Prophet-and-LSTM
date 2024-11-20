@@ -57,10 +57,11 @@ sequence_length = 60  # Lookback window
     predicted = model.predict(X_test)
     predicted = scaler.inverse_transform(predicted)
 
-    # Calculate RMSE
-    actual_values = df['Price'].values[-14:]  # Actual last 14 values
-    rmse = np.sqrt(mean_squared_error(actual_values, predicted[:14]))
-    print("RMSE:", rmse)
+# Calculate RMSE
+    actual = scaler.inverse_transform(y_test.reshape(-1, 1))
+    rmse = np.sqrt(mean_squared_error(actual, predicted))
+
+    return rmse
 
 # Create and run the Optuna study
 study = optuna.create_study(direction='minimize')
