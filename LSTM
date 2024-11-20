@@ -30,7 +30,10 @@ def objective(trial):
     batch_size = trial.suggest_int('batch_size', 16, 64)
     epochs = trial.suggest_int('epochs', 10, 50)
 
-    # Create sequences
+# Create sequences
+sequence_length = 60  # Lookback window
+
+    # Train
     X, y = create_sequences(data_scaled, sequence_length)
     X_train, y_train = X[:-14], y[:-14]  # Leave last 14 for testing
     X_test, y_test = X[-14:], y[-14:]
