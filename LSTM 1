@@ -9,7 +9,7 @@ import optuna
 import matplotlib.pyplot as plt
 
 # Load the data
-df = pd.read_csv('/home/neo/Downloads/NA400/volvo.csv')
+df = pd.read_csv('/YOUR.CSV')
 
 # Ensure date format and select 'Price'
 df['Date'] = pd.to_datetime(df['Date'])
