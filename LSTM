@@ -34,7 +34,6 @@ def objective(trial):
 sequence_length = 60  # Lookback window
 
     # Train
-    X, y = create_sequences(data_scaled, sequence_length)
     X_train, y_train = X[:-14], y[:-14]  # Leave last 14 for testing
     X_test, y_test = X[-14:], y[-14:]
 
