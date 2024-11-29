@@ -1,4 +1,4 @@
-Cross-validation process for hypertunning parameters 
+#Evaluate the best parameters
 
 
 from prophet import Prophet
@@ -40,13 +40,6 @@ for params in all_params:
     	daily_seasonality=True
 	)
     
-	# Add custom seasonalities
-	model.add_country_holidays(country_name="US")
-
-	model.add_seasonality(name='yearly', period=365, fourier_order=params['yearly_seasonality'])
-	model.add_seasonality(name='weekly', period=7, fourier_order=params['weekly_seasonality'])
-	model.add_seasonality(name='monthly', period=30.5, fourier_order=params['monthly_seasonality'])
-    	model.add_seasonality(name='daily', period=1, fourier_order=params['monthly_seasonality'])
 
 	# Fit the model
 	model.fit(df)
